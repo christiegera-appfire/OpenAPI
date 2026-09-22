@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Status REST API</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  #swagger-ui { max-width: 100%; }
+  .topbar { display: none; }
+</style>
+</head>
+<body>
+<div id="swagger-ui"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+<script>
+  const spec = {
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "latest",
+    "title" : "Status Rest API"
+  },
+  "basePath" : "/rest/cw/1/",
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/content/{id}/approvals/approve" : {
+      "patch" : {
+        "summary" : "Approve an approval on a page. Requires workflow visibility permissions.",
+        "description" : "",
+        "operationId" : "approve",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id of the page",
+          "required" : true,
+          "type" : "number",
+          "format" : "int64"
+        }, {
+          "name" : "expand",
+          "in" : "query",
+          "description" : "[state, states, approvals, actions, tasks] which parts of the workflow response to expand in the response.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Approval request with all the info needed to approve the approval: name of the approval is required, user and password are only required when the approval requests credentials, and comment is optional by default (can be changed in the configuration)",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/ContentWorkflowApprovalOperation"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Workflow status.",
+            "schema" : {
+              "$ref" : "#/definitions/ContentWorkflowResponse"
+            }
+          },
+          "400" : {
+            "description" : "There was an error in request, such as bad credentials when required, etc.  The detail of the error will be provided as messages."
+          },
+          "401" : {
+            "description" : "Client is not authenticated."
+          },
+          "403" : {
+            "description" : "No workflow visibility permission on the page."
+          },
+          "404" : {
+            "description" : "No valid page with such id."
+          }
+        }
+      }
+    },
+    "/content/{id}/approvals/assign" : {
+      "patch" : {
+        "summary" : "Assign a user to an approval. Requires workflow visibility permissions.",
+        "description" : "",
+        "operationId" : "assign",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id of the page",
+          "required" : true,
+          "type" : "number",
+          "format" : "int64"
+        }, {
+          "name" : "expand",
+          "in" : "query",
+          "description" : "[state, states, approvals, actions, tasks] which parts of the workflow response to expand in the response.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Assignation request with all the info needed: it's mandatory to specify approval name and assignee while comment is optional",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/ContentWorkflowApprovalAssignmentOperation"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Workflow status.",
+            "schema" : {
+              "$ref" : "#/definitions/ContentWorkflowResponse"
+            }
+          },
+          "400" : {
+            "description" : "There was an error in request. The detail of the error will be provided as messages."
+          },
+          "401" : {
+            "description" : "Client is not authenticated."
+          },
+          "403" : {
+            "description" : "No workflow visibility permission on the page."
+          },
+          "404" : {
+            "description" : "No valid page with such id."
+          }
+        }
+      }
+    },
+    "/content/{id}/approvals/reject" : {
+      "patch" : {
+        "summary" : "Reject and approval on a page. Requires workflow visibility permissions.",
+        "description" : "",
+        "operationId" : "reject",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id of the page",
+          "required" : true,
+          "type" : "number",
+          "format" : "int64"
+        }, {
+          "name" : "expand",
+          "in" : "query",
+          "description" : "[state, states, approvals, actions, tasks] which parts of the workflow response to expand in the response.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Rejection request with all the info needed to reject the approval: name of the approval is required, user and password are only required when the approval requests credentials, and comment is optional by default (can be changed in the configuration)",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/ContentWorkflowApprovalOperation"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Workflow status.",
+            "schema" : {
+              "$ref" : "#/definitions/ContentWorkflowResponse"
+            }
+          },
+          "400" : {
+            "description" : "There was an error in request, such as bad credentials when required, etc.  The detail of the error will be provided as messages."
+          },
+          "401" : {
+            "description" : "Client is not authenticated."
+          },
+          "403" : {
+            "description" : "No workflow visibility permission on the page."
+          },
+          "404" : {
+            "description" : "No valid page with such id."
+          }
+        }
+      }
+    },
+    "/content/{id}/approvals/unassign" : {
+      "patch" : {
+        "summary" : "Unassign a user from an approval. Requires workflow visibility permissions.",
+        "description" : "",
+        "operationId" : "unassign",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id of the page",
+          "required" : true,
+          "type" : "number",
+          "format" : "int64"
+        }, {
+          "name" : "expand",
+          "in" : "query",
+          "description" : "[state, states, approvals, actions, tasks] which parts of the workflow response to expand in the response.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Unassign request with all the info needed: it's mandatory to specify approval name and assignee while comment is optional",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/ContentWorkflowApprovalAssignmentOperation"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Workflow status.",
+            "schema" : {
+              "$ref" : "#/definitions/ContentWorkflowResponse"
+            }
+          },
+          "400" : {
+            "description" : "There was an error in request. The detail of the error will be provided as messages."
+          },
+          "401" : {
+            "description" : "Client is not authenticated."
+          },
+          "403" : {
+            "description" : "No workflow visibility permission on the page."
+          },
+          "404" : {
+            "description" : "No valid page with such id."
+          }
+        }
+      }
+    },
+    "/content/{id}/expirydate" : {
+      "patch" : {
+        "summary" : "Changes the expiration date for the current state in a page. Requires the edit page permission and current state to allow due dates to be changed.",
+        "description" : "",
+        "operationId" : "updateExpiryDate",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id of the page",
+          "required" : true,
+          "type" : "number",
+          "format" : "int64"
+        }, {
+          "name" : "admin",
+          "in" : "query",
+          "description" : "admin mode, returns all actions executable by space admin",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "expand",
+          "in" : "query",
+          "description" : "[state, states, approvals, actions, tasks] which parts of the workflow response to expand in the response.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "State request with the \"expiry\" attribute filled with date in millis, not specifying the attribute or setting it to null will remove the expiration date",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/ContentWorkflowStateExpirationOperation"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Workflow status.",
+            "schema" : {
+              "$ref" : "#/definitions/ContentWorkflowResponse"
+            }
+          },
+          "400" : {
+            "description" : "There was an error in request. The detail of the error will be provided as messages."
+          },
+          "401" : {
+            "description" : "Client is not authenticated"
+          },
+          "403" : {
+            "description" : "No view permission on the page."
+          },
+          "404" : {
+            "description" : "No valid page with such id."
+          }
+        }
+      }
+    },
+    "/content/{id}/parameters" : {
+      "get" : {
+        "summary" : "Get the workflow parameters list that can be edited in a page. Requires the user to have edit page permission.",
+        "description" : "",
+        "operationId" : "getParameters",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id of the page",
+          "required" : true,
+          "type" : "number",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Page Editable Workflow Parameters",
+            "schema" : {
+              "$ref" : "#/definitions/WorkflowParametersResponse"
+            }
+          },
+          "204" : {
+            "description" : "There are no editable workflow parameters in the page"
+          },
+          "401" : {
+            "description" : "Client is not authenticated"
+          },
+          "403" : {
+            "description" : "No edit page permission"
+          },
+          "404" : {
+            "description" : "No valid page with such id or no view permission on the page."
+          }
+        }
+      },
+      "put" : {
+        "summary" : "Update the workflow parameters on a page. Requires the user to have edit page permission.",
+        "description" : "",
+        "operationId" : "updateParameters",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id of the page",
+          "required" : true,
+          "type" : "number",
+          "format" : "int64"
+        }, {
+          "name" : "expand",
+          "in" : "query",
+          "description" : "the expansions on the response object [state, states, approvals, actions, tasks]",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "a map of parameter Id and new value to update.",
+          "required" : false,
+          "schema" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Workflow status.",
+            "schema" : {
+              "$ref" : "#/definitions/ContentWorkflowResponse"
+            }
+          },
+          "400" : {
+            "description" : "There was an error in request. The detail of the error will be provided as messages."
+          },
+          "401" : {
+            "description" : "Client is not authenticated"
+          },
+          "403" : {
+            "description" : "No edit page permission"
+          },
+          "404" : {
+            "description" : "No valid page with such id or no view permission on the page."
+          }
+        }
+      }
+    },
+    "/content/{id}/state" : {
+      "put" : {
+        "summary" : "Changes the workflow state on a page. Requires edit page permission.",
+        "description" : "",
+        "operationId" : "changeState",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id of the page",
+          "required" : true,
+          "type" : "number",
+          "format" : "int64"
+        }, {
+          "name" : "expand",
+          "in" : "query",
+          "description" : "admin mode, returns all actions executable by space admin",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "admin",
+          "in" : "query",
+          "description" : "[state, states, approvals, actions, tasks] which parts of the workflow response to expand in the response.",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "State request with the info to change state: its mandatory to specify a valid state name",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/ContentWorkflowStateOperation"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Workflow status.",
+            "schema" : {
+              "$ref" : "#/definitions/ContentWorkflowResponse"
+            }
+          },
+          "400" : {
+            "description" : "There was an error in request. The detail of the error will be provided as messages."
+          },
+          "401" : {
+            "description" : "Client is not authenticated"
+          },
+          "403" : {
+            "description" : "No view permission on the page."
+          },
+          "404" : {
+            "description" : "No valid page with such id."
+          }
+        }
+      }
+    },
+    "/content/{id}/status" : {
+      "get" : {
+        "summary" : "Returns expandable information regarding the workflow status, allowing the client to expand the required information. Requires workflow visibility permissions",
+        "description" : "",
+        "operationId" : "getContentWorkflowStatus",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "id of the page",
+          "required" : true,
+          "type" : "number",
+          "format" : "int64"
+        }, {
+          "name" : "admin",
+          "in" : "query",
+          "description" : "admin mode, returns all actions executable by space admin",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "expand",
+          "in" : "query",
+          "description" : "[state, states, approvals, actions, tasks] which parts of the workflow response to expand in the response.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "publishedView",
+          "in" : "query",
+          "description" : "if true, public view specific info, like public view messages, are retrieved",
+          "required" : false,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Workflow status.",
+            "schema" : {
+              "$ref" : "#/definitions/ContentWorkflowResponse"
+            }
+          },
+          "204" : {
+            "description" : "There is no workflow set on the page."
+          },
+          "400" : {
+            "description" : "Workflow error. Check messages."
+          },
+          "401" : {
+            "description" : "Client is not authenticated."
+          },
+          "403" : {
+            "description" : "No workflow visibility permission on the page."
+          },
+          "404" : {
+            "description" : "No valid page with such id."
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "AllowedAssignerGroupCondition" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Condition"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "groups" : {
+            "type" : "string",
+            "example" : "group_1,group_2,group_3",
+            "description" : "Comma separated list of groups that can assign an approval"
+          }
+        },
+        "description" : "<p>The groups that can assign an approval.</p><p>Condition type: exclude</p>"
+      } ]
+    },
+    "AllowedAssignerUserCondition" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Condition"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "users" : {
+            "type" : "string",
+            "example" : "user_1,user_2,user_3",
+            "description" : "Comma separated list of users that can assign an approval"
+          }
+        },
+        "description" : "<p>The users that can assign an approval.</p><p>Condition type: exclude</p>"
+      } ]
+    },
+    "Approval" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "example" : "Review",
+          "description" : "Approval Name"
+        },
+        "weight" : {
+          "type" : "number",
+          "example" : 10.0,
+          "description" : "Numeric value that sets in which order the approvals appear in the state (lightest weight first)"
+        },
+        "label" : {
+          "type" : "string",
+          "example" : "label_1",
+          "description" : "Labels that must be present in the page/blog post to make the approval appear"
+        },
+        "credentials" : {
+          "type" : "string",
+          "example" : "password",
+          "description" : "Credentials required to approve/reject the approval (if none required, not shown). \"password\" or \"userid+password\"."
+        },
+        "approvers" : {
+          "description" : "List of automatically assigned approval reviewers when the state is initialized.",
+          "$ref" : "#/definitions/Approvers"
+        },
+        "conditions" : {
+          "type" : "array",
+          "description" : "Approval conditions list.",
+          "items" : {
+            "$ref" : "#/definitions/Condition"
+          }
+        }
+      },
+      "description" : "State Approvals"
+    },
+    "ApprovalAction" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/ContentAction"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "example" : "Review",
+            "description" : "Approval's name"
+          },
+          "shortName" : {
+            "type" : "string",
+            "example" : "Review",
+            "description" : "Approval's short name"
+          },
+          "instructions" : {
+            "type" : "string"
+          },
+          "signature" : {
+            "type" : "string",
+            "example" : "PASSWORD",
+            "description" : "<p>The signature mode for the approval:</p><ul><li>PASSWORD: Only password required (set with \"1\" in \"credentials\" param in <a href=\"https://apps.appf.re/cdmdc/doc/approvalmacro/wdIZvh\">\"approval\" macro</a>)</li><li>USERID_AND_PASSWORD: User name and password required (set with \"2\" in \"credentials\" param in <a href=\"https://apps.appf.re/cdmdc/doc/approvalmacro/wdIZvh\">\"approval\" macro</a>)</li></ul>"
+          },
+          "eSignature" : {
+            "type" : "string",
+            "example" : "CONFLUENCE",
+            "description" : "<p>The e-signature type used for the approval:</p><ul><li>CONFLUENCE: Confluence credentials authentication</li><li>OTP: One-Time Password authentication</li></ul>"
+          },
+          "involvedUsers" : {
+            "type" : "array",
+            "description" : "List of involved users",
+            "items" : {
+              "$ref" : "#/definitions/User"
+            }
+          },
+          "requiresComment" : {
+            "type" : "boolean",
+            "example" : false,
+            "description" : "If the comment action is mandatory"
+          },
+          "hasSigning" : {
+            "type" : "boolean",
+            "example" : false,
+            "description" : "If the user has a signing token configured, relevant only when eSignature attribute is OTP"
+          }
+        },
+        "description" : "Approval action with related information about the approval itself"
+      } ]
+    },
+    "Approver" : {
+      "type" : "object",
+      "required" : [ "approved", "rejected" ],
+      "properties" : {
+        "user" : {
+          "description" : "User information",
+          "$ref" : "#/definitions/User"
+        },
+        "approved" : {
+          "type" : "boolean",
+          "example" : true,
+          "description" : "If user approved already"
+        },
+        "rejected" : {
+          "type" : "boolean",
+          "example" : false,
+          "description" : "If user rejected already"
+        },
+        "comment" : {
+          "type" : "string",
+          "example" : "Approval approved, it is fine",
+          "description" : "Comment assigned to the approval/rejection"
+        }
+      },
+      "description" : "Approval user information"
+    },
+    "Approvers" : {
+      "type" : "object",
+      "properties" : {
+        "users" : {
+          "type" : "string",
+          "example" : "user1,user2,user3",
+          "description" : "Comma separated list of directly assigned approvers"
+        },
+        "groups" : {
+          "type" : "string",
+          "example" : "confluence-users,confluence-administrators",
+          "description" : "Comma separated list of directly assigned approver groups"
+        },
+        "minimum" : {
+          "type" : "string",
+          "example" : "*",
+          "description" : "<p>Minimum required amount of approvers to approve/reject the approval. Possible values:</p><ul><li>If no minimum value is set or minimum is 0 or 1 then it will be \"*\".</li><li>If it is directly assigned using \"&\" before \"user\" and \"group\" its value would be \"all\".</li><li>If there are no directly assigned users or groups and minimum is higher than 1 then its value will be shown like \"{minimum}+\"</li></ul>"
+        }
+      },
+      "description" : "Information about the default approvers of the approval"
+    },
+    "Assignee" : {
+      "type" : "object",
+      "properties" : {
+        "username" : {
+          "type" : "string"
+        },
+        "rolename" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ChangeAction" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/ContentAction"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "states" : {
+            "type" : "array",
+            "description" : "List of valid states to transition to",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "description" : "Action to change to a different state"
+      } ]
+    },
+    "Condition" : {
+      "type" : "object",
+      "properties" : {
+        "clause" : {
+          "type" : "string",
+          "description" : "<p>States relationship between condition type and its value.</p><p>Examples: \"is\", \"is-not\", \"has\", \"has-not\"...</p>"
+        }
+      },
+      "description" : "<p>Workflow Conditions.</p><p>Check existing conditions <a href=\"https://apps.appf.re/cdmdc/doc/conditions/4TTaEV\">here</a>.</p>"
+    },
+    "ContentAction" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "description" : "<p>\"parameters | change | approval\", depending on the type, different information will be provided.</p><p> See ParametersAction, ChangeAction or ApprovalAction subtypes</p>"
+        },
+        "actions" : {
+          "type" : "array",
+          "description" : "<p>List of available actions depending on the action type:</p><ul><li>If type is \"approval\" some of the following available: approve, reject, assign, unassign</li><li>If type is \"change\": change</li></ul>",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "description" : "Information related to the different actions that can be taken in current state. See ParametersAction, ChangeAction or ApprovalAction subtypes"
+    },
+    "ContentApproval" : {
+      "type" : "object",
+      "required" : [ "isOneApproverOnly", "isRolesEnabled" ],
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "example" : "Review",
+          "description" : "Name of the approval."
+        },
+        "nameTranslation" : {
+          "type" : "string",
+          "example" : "Review this page",
+          "description" : "Approval name translation."
+        },
+        "shortName" : {
+          "type" : "string",
+          "example" : "RW",
+          "description" : "Generated unique short name to be used as slug."
+        },
+        "minimumRequiredApprovers" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : 1,
+          "description" : "The minimum number of users that have to approve the approval. Default = 1."
+        },
+        "isOneApproverOnly" : {
+          "type" : "boolean",
+          "example" : false,
+          "description" : "The approval must only be approved by 1 user. Default = false."
+        },
+        "isRolesEnabled" : {
+          "type" : "boolean",
+          "example" : false,
+          "description" : "Whether the Approval Roles feature is enabled or not."
+        },
+        "filterUsers" : {
+          "type" : "array",
+          "example" : "[ \"user1\", \"user2\" ]",
+          "description" : "List of users which can be assigned for this approval.",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "filterExcludedUsers" : {
+          "type" : "array",
+          "example" : "[ \"user3\", \"user4\" ]",
+          "description" : "List of users excluded from being assigned and approving this approval.",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "filterGroups" : {
+          "type" : "array",
+          "example" : "[ \"confluence-users\", \"confluence-administrators\" ]",
+          "description" : "List of groups which can be assigned for this approval.",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "approvers" : {
+          "type" : "array",
+          "description" : "Approvers info.",
+          "items" : {
+            "$ref" : "#/definitions/Approver"
+          }
+        },
+        "approveLabel" : {
+          "type" : "string",
+          "example" : "Accept",
+          "description" : "Custom approve action button label."
+        },
+        "rejectLabel" : {
+          "type" : "string",
+          "example" : "Deny",
+          "description" : "Custom reject action button label."
+        }
+      },
+      "description" : "Approval information"
+    },
+    "ContentState" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "example" : "Final",
+          "description" : "State unique name"
+        },
+        "nameTranslation" : {
+          "type" : "string",
+          "example" : "Aprobado",
+          "description" : "State unique name translation"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Description of the state",
+          "description" : "State description"
+        },
+        "initial" : {
+          "type" : "boolean",
+          "description" : "Defines if the state is the entry point of the workflow"
+        },
+        "final" : {
+          "type" : "boolean",
+          "example" : true,
+          "description" : "Defines if the state is a final one of a workflow"
+        },
+        "dueDate" : {
+          "type" : "number",
+          "example" : 1.50727749E9,
+          "description" : "Duration of time before the state expires expressed in epoch time in millis"
+        },
+        "colour" : {
+          "type" : "string",
+          "example" : "#000000",
+          "description" : "Colour of the state"
+        },
+        "hideStates" : {
+          "type" : "boolean",
+          "example" : true,
+          "description" : "Defines if page state should be hidden or not"
+        },
+        "taskable" : {
+          "type" : "boolean",
+          "example" : true,
+          "description" : "Defines if tasks can be added to the page"
+        },
+        "changeDueDate" : {
+          "type" : "boolean",
+          "example" : true,
+          "description" : "Defines if expiration date can be updated"
+        },
+        "transitions" : {
+          "$ref" : "#/definitions/StateTransitions"
+        },
+        "requestParams" : {
+          "type" : "boolean",
+          "example" : true
+        }
+      },
+      "xml" : {
+        "name" : "contentState"
+      },
+      "description" : "Information related to a state in a workflow"
+    },
+    "ContentTask" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "Unique identifier of the task."
+        },
+        "name" : {
+          "type" : "string",
+          "example" : "Task 1",
+          "description" : "Title of the task."
+        },
+        "assignee" : {
+          "description" : "User currently assigned to the task.",
+          "$ref" : "#/definitions/User"
+        },
+        "actions" : {
+          "type" : "array",
+          "example" : "[ \"complete\", \"delete\" ]",
+          "description" : "Available actions; assign, complete, delete.",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "dueDate" : {
+          "type" : "number",
+          "example" : 1.507278989419E12,
+          "description" : "Time limit to do the task expressed in epoch millis."
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Review the whole document",
+          "description" : "Description for the task."
+        },
+        "completed" : {
+          "type" : "boolean",
+          "example" : true,
+          "description" : "If the task has been completed."
+        },
+        "date" : {
+          "type" : "boolean",
+          "example" : false,
+          "description" : "Date of task's completion expressed in epoch millis."
+        },
+        "comment" : {
+          "type" : "string",
+          "example" : "Document reviewed, good job",
+          "description" : "Comments on completion."
+        }
+      },
+      "description" : "Info related to the different tasks associated to the current state"
+    },
+    "ContentWorkflowApprovalAssignmentOperation" : {
+      "type" : "object",
+      "properties" : {
+        "parameters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Parameter"
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "example" : "Review",
+          "description" : "name of the approval (required)"
+        },
+        "comment" : {
+          "type" : "string",
+          "example" : "I assign the approval to you",
+          "description" : "approval assignment note (optional)"
+        },
+        "assignees" : {
+          "type" : "array",
+          "description" : "list of assignees to be assigned/unnassigned to the approval (required)",
+          "items" : {
+            "$ref" : "#/definitions/Assignee"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "approvalAssignmentRequest"
+      },
+      "description" : "Wrapper entity with all the info to make an approval assign/unassign operations"
+    },
+    "ContentWorkflowApprovalOperation" : {
+      "type" : "object",
+      "properties" : {
+        "parameters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Parameter"
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "example" : "Review",
+          "description" : "name of the approval (required)"
+        },
+        "comment" : {
+          "type" : "string",
+          "example" : "Document reviewed and approved",
+          "description" : "approval note (optional by default, required if set in global configuration)"
+        },
+        "user" : {
+          "type" : "string",
+          "description" : "user for approval credential (only required if credentials of type 2 set in the <a href=\"https://apps.appf.re/cdmdc/doc/approvalmacro/FY7xio\">approval</a>)"
+        },
+        "password" : {
+          "type" : "string",
+          "description" : "password for approval credential (only required if credentials of type 1 or 2 set in the <a href=\"https://apps.appf.re/cdmdc/doc/approvalmacro/FY7xio\">approval</a>)"
+        }
+      },
+      "xml" : {
+        "name" : "approvalRequest"
+      },
+      "description" : "Wrapper entity with all the info to make an approval approve/reject operations"
+    },
+    "ContentWorkflowResponse" : {
+      "type" : "object",
+      "required" : [ "displayProgressTracker", "displaySuppressReadConfirmation" ],
+      "properties" : {
+        "expand" : {
+          "type" : "string",
+          "example" : "approvals,actions,tasks,states",
+          "description" : "<p>Expandable key that shows the available expanding options.</p><p>Existing keys to expand the response: approvals,actions,tasks,states</p>"
+        },
+        "workflowName" : {
+          "type" : "string",
+          "example" : "Workflow name",
+          "description" : "Name of the current workflow"
+        },
+        "state" : {
+          "description" : "Information of the current state",
+          "$ref" : "#/definitions/ContentState"
+        },
+        "publishedState" : {
+          "description" : "Information of the most recent published state, if any",
+          "$ref" : "#/definitions/ContentState"
+        },
+        "approvals" : {
+          "type" : "array",
+          "description" : "List of the available approvals in the current state",
+          "items" : {
+            "$ref" : "#/definitions/ContentApproval"
+          }
+        },
+        "states" : {
+          "type" : "array",
+          "description" : "List existing states in the workflow",
+          "items" : {
+            "$ref" : "#/definitions/State"
+          }
+        },
+        "actions" : {
+          "type" : "array",
+          "description" : "List of available actions in the current state",
+          "items" : {
+            "$ref" : "#/definitions/ContentAction"
+          }
+        },
+        "tasks" : {
+          "type" : "array",
+          "description" : "List of tasks",
+          "items" : {
+            "$ref" : "#/definitions/ContentTask"
+          }
+        },
+        "messages" : {
+          "type" : "array",
+          "description" : "List of messages (error messages or messages set with the message macro)",
+          "items" : {
+            "$ref" : "#/definitions/Message"
+          }
+        },
+        "displayProgressTracker" : {
+          "type" : "boolean",
+          "example" : true
+        },
+        "displaySuppressReadConfirmation" : {
+          "type" : "boolean",
+          "example" : true
+        },
+        "contributors" : {
+          "$ref" : "#/definitions/UsersQuerySearchResults"
+        },
+        "roles" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "contentWorkflow"
+      },
+      "description" : "Response for all requests to content workflow endpoint."
+    },
+    "ContentWorkflowStateExpirationOperation" : {
+      "type" : "object",
+      "properties" : {
+        "expiry" : {
+          "type" : "number",
+          "example" : 1.506004498284E12,
+          "description" : "Expiration date for the state in epoch millis (set it null to remove the current expiration time, if any)"
+        }
+      },
+      "description" : "Wrapper entity with all the info to make state expiry date change operation"
+    },
+    "ContentWorkflowStateOperation" : {
+      "type" : "object",
+      "properties" : {
+        "parameters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Parameter"
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "Name of the new state (required)"
+        },
+        "comment" : {
+          "type" : "string",
+          "description" : "State change note (optional)"
+        },
+        "expiry" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Expiry date for the new state in Epoch milliseconds (optional)"
+        }
+      },
+      "description" : "Wrapper entity with all the info to make a state change operation"
+    },
+    "ExcludeCondition" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Condition"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "excludedUsers" : {
+            "type" : "string",
+            "example" : "user_1,user_2,user_3",
+            "description" : "Comma separated list of excluded users"
+          }
+        },
+        "description" : "<p>Users that are excluded from performing the action.</p><p>Condition type: exclude</p>"
+      } ]
+    },
+    "GroupCondition" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Condition"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "groups" : {
+            "type" : "string",
+            "example" : "group_1,group_2,group_3",
+            "description" : "Comma separated list of groups that can approve/reject"
+          }
+        },
+        "description" : "<p>The groups that can perform the action.</p><p>Condition type: group</p>"
+      } ]
+    },
+    "HasApprovalCondition" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Condition"
+      }, {
+        "type" : "object",
+        "required" : [ "current" ],
+        "properties" : {
+          "approval" : {
+            "type" : "string",
+            "example" : "Review",
+            "description" : "Approval name"
+          },
+          "current" : {
+            "type" : "boolean",
+            "example" : true
+          }
+        },
+        "description" : "<p>The page has the given approval approved</p><p>Condition type: hasapproval</p>"
+      } ]
+    },
+    "HasLabelCondition" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Condition"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "labels" : {
+            "type" : "array",
+            "example" : "[ \"label_1\", \"label_2\" ]",
+            "description" : "List of labels",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "description" : "<p>The page has/has not any of the given labels | The page´s ancestors has/has not any of the given labels</p><p>Condition type: haslabel | parenthaslabel</p>"
+      } ]
+    },
+    "InputField" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "Unique identificator of the input field"
+        },
+        "name" : {
+          "type" : "string",
+          "example" : "Reviewers",
+          "description" : "Name of the related parameter"
+        },
+        "value" : {
+          "type" : "string",
+          "example" : "confluence-users",
+          "description" : "Value for the parameter"
+        },
+        "type" : {
+          "type" : "string",
+          "example" : "group",
+          "description" : "Input type from the supported ones",
+          "enum" : [ "TEXT", "USER", "USERORGROUP", "GROUP", "DURATION", "LIST" ]
+        },
+        "options" : {
+          "type" : "array",
+          "description" : "In case of LIST type, the valid options to show",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Reviewers group",
+          "description" : "Description of the related parameter"
+        }
+      },
+      "xml" : {
+        "name" : "input"
+      },
+      "description" : "<p>Information related to an input field to get parameter info.</p><p>See the <a href=\"https://apps.appf.re/cdmdc/doc/workflowparametermacro/UzWWHo\">workflow parameter macro</a> for further information.</p>"
+    },
+    "Link" : {
+      "type" : "object",
+      "properties" : {
+        "href" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "Message" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "example" : "Error",
+          "description" : " Type of message from Info|Error"
+        },
+        "title" : {
+          "type" : "string",
+          "example" : "Credentials required",
+          "description" : "Message title"
+        },
+        "html" : {
+          "type" : "string",
+          "example" : "Valid user/password are required to process the approval",
+          "description" : "Value in html to show to the user"
+        },
+        "closeable" : {
+          "type" : "boolean",
+          "example" : true,
+          "description" : "If the message is dismissible"
+        },
+        "code" : {
+          "type" : "string",
+          "description" : "Code"
+        }
+      },
+      "description" : "Information or error message indicating the outcome for an operation"
+    },
+    "MetadataCondition" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Condition"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "names" : {
+            "type" : "array",
+            "example" : "[ \"Editor in Chief\", \"Reviewer\" ]",
+            "description" : "List of names of value references that should or should not contain users",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "value" : {
+            "type" : "string"
+          }
+        },
+        "description" : "<p>The value reference contains users.</p><p>Condition type: metadata</p>"
+      } ]
+    },
+    "PageCondition" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Condition"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "page" : {
+            "type" : "string",
+            "example" : "Page 1",
+            "description" : "Page title"
+          }
+        },
+        "description" : "<p>If the page is descendant of the given page|Title of the page is</p><p>Condition type: ischildof | title</p>"
+      } ]
+    },
+    "Parameter" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ParametersAction" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/ContentAction"
+      }, {
+        "type" : "object",
+        "required" : [ "isInit" ],
+        "properties" : {
+          "inputFields" : {
+            "type" : "array",
+            "description" : "Information related to the parameter's input fields",
+            "items" : {
+              "$ref" : "#/definitions/InputField"
+            }
+          },
+          "isInit" : {
+            "type" : "boolean",
+            "example" : false,
+            "description" : "True if page parameter values have to be initialized"
+          }
+        },
+        "description" : "Action for parameters input"
+      } ]
+    },
+    "PermissionCondition" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Condition"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "permission" : {
+            "type" : "array",
+            "example" : "[ \"edit\", \"view\" ]",
+            "description" : "List of needed permissions: edit, view or administer",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "description" : "<p>User has given permission.</p><p>Condition type: permission</p>"
+      } ]
+    },
+    "SpaceCondition" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Condition"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "spaceKey" : {
+            "type" : "string",
+            "example" : "SP1",
+            "description" : "Space key"
+          }
+        },
+        "description" : "<p>Key of the space is</p><p>Condition type: spacekey</p>"
+      } ]
+    },
+    "State" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "example" : "Draft",
+          "description" : "Name of the state"
+        },
+        "nameTranslation" : {
+          "type" : "string",
+          "example" : "Draft translation",
+          "description" : "State name translation"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "State of pages under construction",
+          "description" : "Description of the state"
+        },
+        "transitions" : {
+          "description" : "Available state transitions from this state",
+          "$ref" : "#/definitions/StateTransitions"
+        },
+        "final" : {
+          "type" : "string",
+          "example" : "false",
+          "description" : "True if is a final state"
+        },
+        "taskable" : {
+          "type" : "boolean",
+          "example" : true,
+          "description" : "True if tasks can be set in this state"
+        },
+        "changeDueDate" : {
+          "type" : "boolean",
+          "example" : false,
+          "description" : "True if due date can be changed by users"
+        },
+        "hideFromPath" : {
+          "type" : "boolean",
+          "example" : true,
+          "description" : "True if the state is hidden from the workflow progress tracker"
+        },
+        "dueDate" : {
+          "type" : "string",
+          "example" : "P2D",
+          "description" : "Time period before the state expires (ISO 8601 format) or exact date when the state expires"
+        },
+        "colour" : {
+          "type" : "string",
+          "example" : "#FFAB00",
+          "description" : "Colour of the state"
+        },
+        "approvals" : {
+          "type" : "array",
+          "description" : "List of available approvals in this state",
+          "items" : {
+            "$ref" : "#/definitions/Approval"
+          }
+        }
+      },
+      "description" : "Info about a workflow state"
+    },
+    "StateCondition" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Condition"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "states" : {
+            "type" : "array",
+            "example" : "[ \"state_1\", \"state_2\" ]",
+            "description" : "List of state names",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "description" : "<p>The state in the current page is the given | The state in the corresponding Draft space as defined through Comala Publishing.</p><p>Condition type: state | stateindraft</p>"
+      } ]
+    },
+    "StateTransition" : {
+      "type" : "object",
+      "properties" : {
+        "state" : {
+          "type" : "string",
+          "description" : "State transition"
+        },
+        "parameters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Parameter"
+          }
+        }
+      },
+      "description" : "State transition definition"
+    },
+    "StateTransitions" : {
+      "type" : "object",
+      "properties" : {
+        "approved" : {
+          "description" : "Name of the state that will be automatically set when all approvals are approved",
+          "$ref" : "#/definitions/StateTransition"
+        },
+        "rejected" : {
+          "description" : "Name of the state that will be automatically set when all approvals are rejected",
+          "$ref" : "#/definitions/StateTransition"
+        },
+        "updated" : {
+          "description" : "Name of the state that will be automatically set when the page is updated",
+          "$ref" : "#/definitions/StateTransition"
+        },
+        "expired" : {
+          "description" : "Name of the state that will be automatically set when the state expires",
+          "$ref" : "#/definitions/StateTransition"
+        },
+        "submit" : {
+          "description" : "Name of the state that will be automatically set when page is submitted",
+          "$ref" : "#/definitions/StateTransition"
+        },
+        "completed" : {
+          "description" : "Name of the state that will be automatically set when all tasks are completed",
+          "$ref" : "#/definitions/StateTransition"
+        },
+        "select" : {
+          "type" : "array",
+          "description" : "List of names of the states available to be selected as the next state",
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/StateTransition"
+          }
+        }
+      },
+      "description" : "State transitions defined for each workflow event"
+    },
+    "User" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "example" : "user_1",
+          "description" : "User name"
+        },
+        "rolename" : {
+          "type" : "string",
+          "example" : "Project Manager",
+          "description" : "Role name"
+        },
+        "shortName" : {
+          "type" : "string",
+          "example" : "user_1",
+          "description" : "Users' short name"
+        },
+        "fullName" : {
+          "type" : "string",
+          "example" : "User One",
+          "description" : "Users' full name"
+        },
+        "pictureUrl" : {
+          "type" : "string",
+          "example" : "/images/icons/profilepics/user1.png",
+          "description" : "ink to the user's avatar"
+        }
+      },
+      "xml" : {
+        "name" : "user"
+      },
+      "description" : "User related information"
+    },
+    "UserCondition" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Condition"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "users" : {
+            "type" : "string",
+            "example" : "user_1,user_2,user_3",
+            "description" : "Comma separated list of users that can approve/reject"
+          }
+        },
+        "description" : "<p>Users that can perform the action.</p><p>Condition type: user</p>"
+      } ]
+    },
+    "UserSearchResult" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "username" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "title" : {
+          "type" : "string"
+        },
+        "thumbnailLink" : {
+          "$ref" : "#/definitions/Link"
+        }
+      }
+    },
+    "UsersQuerySearchResults" : {
+      "type" : "object",
+      "required" : [ "totalSize" ],
+      "properties" : {
+        "results" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "result"
+          },
+          "items" : {
+            "xml" : {
+              "name" : "result"
+            },
+            "$ref" : "#/definitions/UserSearchResult"
+          }
+        },
+        "totalSize" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : 1500
+        }
+      }
+    },
+    "WorkflowParametersResponse" : {
+      "type" : "object",
+      "properties" : {
+        "workflowParameters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/InputField"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "listworkflowparams"
+      }
+    }
+  }
+};
+
+  window.onload = function() {
+    window.ui = SwaggerUIBundle({
+      spec: spec,
+      dom_id: '#swagger-ui',
+      presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIStandalonePreset
+      ],
+      layout: "StandaloneLayout"
+    });
+  };
+</script>
+</body>
+</html>

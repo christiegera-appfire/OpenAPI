@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Document Activity REST API</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  #swagger-ui { max-width: 100%; }
+  .topbar { display: none; }
+</style>
+</head>
+<body>
+<div id="swagger-ui"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+<script>
+  const spec = {
+  "swagger": "2.0",
+  "info": {
+    "version": "latest",
+    "title": "Document Activity REST API"
+  },
+  "basePath": "/rest/cw/2/",
+  "tags": [
+    {
+      "name": "documentactivity"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/documentactivity/pages": {
+      "post": {
+        "tags": [
+          "documentactivity"
+        ],
+        "summary": "Retrieves the workflow document activity information for a group of pages.",
+        "description": "",
+        "operationId": "getReportForPages",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Document activity request",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/DocumentActivityRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Activities were queried successfully",
+            "schema": {
+              "$ref": "#/definitions/DocumentActivityResult"
+            }
+          },
+          "400": {
+            "description": "Validation error of the input body"
+          },
+          "401": {
+            "description": "Client is not authenticated"
+          },
+          "403": {
+            "description": "User has not workflow visibility permissions"
+          },
+          "500": {
+            "description": "Exception when trying to retrieve data for DocumentActivity"
+          }
+        }
+      }
+    },
+    "/documentactivity/spaces": {
+      "post": {
+        "tags": [
+          "documentactivity"
+        ],
+        "summary": "Retrieves the workflow document activity information for a a group of spaces.",
+        "description": "",
+        "operationId": "getReportForSpaces",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Document activity request",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/DocumentActivityRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Activities were queried successfully",
+            "schema": {
+              "$ref": "#/definitions/DocumentActivityResult"
+            }
+          },
+          "400": {
+            "description": "Validation error of the input body"
+          },
+          "401": {
+            "description": "Client is not authenticated"
+          },
+          "403": {
+            "description": "User has not workflow visibility permissions"
+          },
+          "500": {
+            "description": "Exception when trying to retrieve data for DocumentActivity"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Action": {
+      "type": "object",
+      "properties": {
+        "actionDetails": {
+          "type": "array",
+          "description": "The extra information and details for the action",
+          "items": {
+            "$ref": "#/definitions/ActionDetail"
+          }
+        },
+        "actors": {
+          "type": "array",
+          "description": "The list of users that have performed the action, represented by Actors",
+          "items": {
+            "$ref": "#/definitions/Actor"
+          }
+        },
+        "actionType": {
+          "description": "The type of the action",
+          "$ref": "#/definitions/ActionType"
+        }
+      },
+      "description": "The Action that was performed on the document"
+    },
+    "ActionDetail": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string",
+          "example": "123647",
+          "description": "The value of the detail type"
+        },
+        "type": {
+          "type": "string",
+          "example": "assigneeTimeToApprove",
+          "description": "The type of this detail record. It could be one of the following: stateName, stateId, stateComment, expiryDate,\n final, sourceStateName, approvalId, approvalName, approvalComment, approvalRole, approvalUserUnassigned,\n approvalUserAssigned, approvalSignatureMode, approvalSignatureType, taskName, taskComment, taskDescription,\n taskUserAssigned, taskUserUnassigned, taskDueDate, stateTimeLapsed, timeLapsedForApprove, approvers, requiredApprovers, assigneeTimeToApprove."
+        },
+        "participants": {
+          "type": "array",
+          "description": "The participant users of this detail record. Represented by Actors.",
+          "items": {
+            "$ref": "#/definitions/Actor"
+          }
+        }
+      },
+      "description": "Extra info and details for the action"
+    },
+    "ActionType": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "task",
+          "description": "Type of the action. It could be one of the following: approval, state, readack, task"
+        },
+        "subtype": {
+          "type": "string",
+          "example": "taskCompletion",
+          "description": "Subtype of the action, it is related to the type of the action. it could be one of the following: override, init, transition, expired, expiryUpdate, expiryRemoved, \n readackCompleted, approvalUnassigned, approvalAssigned, approvalRejected, approvalApproved,\n taskUnassignment, taskAssignment, taskCreation, taskUpdate, taskDeletion, taskCompletion, taskDueDate,\n taskDueDateRemoved, taskDueDateExpired"
+        }
+      },
+      "description": "Type of action performed"
+    },
+    "Activity": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "description": "Page or blogpost subjected to an activity",
+          "$ref": "#/definitions/Target"
+        },
+        "action": {
+          "description": "The Action that was performed on the document",
+          "$ref": "#/definitions/Action"
+        },
+        "moment": {
+          "type": "integer",
+          "format": "int64",
+          "example": 123846,
+          "description": "The instant when the activity took place expressed in epoch millis"
+        }
+      },
+      "description": "This is the specification of the activity that was performed on the document."
+    },
+    "Actor": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "John",
+          "description": "The user's name"
+        },
+        "id": {
+          "type": "string",
+          "example": "8aa7c63adfie24017bc8fdba710000",
+          "description": "The user id"
+        },
+        "displayName": {
+          "type": "string",
+          "example": "John Snow",
+          "description": "The user's full name"
+        },
+        "profilePicPath": {
+          "type": "string",
+          "example": "/confluence/images/icons/profilepics/default.svg",
+          "description": "The path of the profile picture"
+        }
+      },
+      "description": "This is the specification of the user involved in the action."
+    },
+    "DocumentActivityActionTypesFilter": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "task",
+          "description": "The type of action. Can be one of the following: approval, state, readack or task."
+        },
+        "subtypes": {
+          "type": "array",
+          "example": "[\"taskDueDateExpired\"]",
+          "description": "Comma-separated list of subtypes of the action. If no subtype is provided, then all the events of the given type will be retrieved. Can be one of the following: for \"state\" type events: override, init,\n transition, expired, expiryUpdate or expiryRemoved. For \"readack\" type events: readackCompleted. For \"approval\" type events: approvalUnassigned, approvalAssigned,\n approvalRejected or approvalApproved. For \"task\" type events: taskUnassignment, taskAssignment, taskCreation, taskUpdate, taskDeletion,\n taskCompletion, taskDueDate, taskDueDateRemoved or taskDueDateExpired.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Object to contain a selection of type / subtypes to be filtered in a document activity query"
+    },
+    "DocumentActivityQueryFilter": {
+      "type": "object",
+      "properties": {
+        "fromDate": {
+          "type": "integer",
+          "format": "int64",
+          "example": 12345323,
+          "description": "Limits the value of the activity moment to be greater or equals this value expressed in epoch millis"
+        },
+        "toDate": {
+          "type": "integer",
+          "format": "int64",
+          "example": 12345323,
+          "description": "Limits the value of the activity moment to be lesser or equals this value expressed in epoch millis"
+        },
+        "actors": {
+          "type": "array",
+          "example": "[\"8aa7c63adfie24017bc8fdba710000\"]",
+          "description": "Limits the actor of the activity to be one of these values, represented by user ids.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "participants": {
+          "type": "array",
+          "example": "[\"8aa7c63adfie24017bc8fdba710000\"]",
+          "description": "Limits the participant of the activity to be one of these values, represented by user ids.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "types": {
+          "type": "array",
+          "description": "List of Activity action types (STATE, APPROVAL, TASK and READ_CONFIRMATION) and its list of subtypes",
+          "items": {
+            "$ref": "#/definitions/DocumentActivityActionTypesFilter"
+          }
+        },
+        "stateNames": {
+          "type": "array",
+          "example": "[\"In Progress\", \"Approved\"]",
+          "description": "list of state names in which the actions took place",
+          "items": {
+            "type": "string"
+          }
+        },
+        "scope": {
+          "description": "Object with the target page/s id/s or space/s key/s to search activities for",
+          "$ref": "#/definitions/DocumentActivityQueryScope"
+        }
+      },
+      "description": "Fields to be used for filtering results."
+    },
+    "DocumentActivityQueryScope": {
+      "type": "object",
+      "properties": {
+        "pageIds": {
+          "type": "array",
+          "example": "[\"134325\", \"24362345\", \"2345643\"]",
+          "description": "List with the page Ids",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "spaceKeys": {
+          "type": "array",
+          "example": "[\"ADC\", \"SWP\", \"COM\"]",
+          "description": "List with the space keys",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Object with the target page/s id/s or space/s key/s to search activities for. It should refer only to one of them depending on which endpoint is been called.If the endpoint called is the page's one, only the pageIds should be provided, and vice-versa."
+    },
+    "DocumentActivityRequest": {
+      "type": "object",
+      "properties": {
+        "sorting": {
+          "type": "string",
+          "example": "desc",
+          "description": "The order for the sorting of activities, ascending or descending on the moment they occurred",
+          "enum": [
+            "asc",
+            "desc"
+          ]
+        },
+        "filters": {
+          "description": "Fields to be used for filtering results.",
+          "$ref": "#/definitions/DocumentActivityQueryFilter"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int32",
+          "example": 0,
+          "description": "Offset used to paginate results within a certain query."
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32",
+          "example": 100,
+          "description": "Limits the maximum amount of activities retrieved."
+        }
+      },
+      "description": "This is the specification of the requested data."
+    },
+    "DocumentActivityResult": {
+      "type": "object",
+      "properties": {
+        "activities": {
+          "type": "array",
+          "description": "The list of activities returned by the query",
+          "items": {
+            "$ref": "#/definitions/Activity"
+          }
+        }
+      },
+      "description": "This is the specification of the data regarding the document activity. The information will refer to pages or spaces depending on the endpoint used to retrieve it."
+    },
+    "Target": {
+      "type": "object",
+      "properties": {
+        "attachmentList": {
+          "type": "array",
+          "description": "The list of attachments the page or blogpost has",
+          "items": {
+            "$ref": "#/definitions/TargetAttachment"
+          }
+        },
+        "targetVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "example": 54625,
+          "description": "Id of the version of the target page or blogpost where the action took place"
+        },
+        "targetId": {
+          "type": "integer",
+          "format": "int64",
+          "example": 54523,
+          "description": "The id of the target page or blogpost"
+        },
+        "spaceKey": {
+          "type": "string",
+          "example": "ASD",
+          "description": "The spacekey where the activity took place"
+        },
+        "targetVersion": {
+          "type": "integer",
+          "format": "int32",
+          "example": 1,
+          "description": "The version of the target page or blogpost"
+        }
+      },
+      "description": "Page or blogpost subjected to an activity"
+    },
+    "TargetAttachment": {
+      "type": "object",
+      "properties": {
+        "targetAttachmentId": {
+          "type": "integer",
+          "format": "int64",
+          "example": 237563,
+          "description": "The id of the attachment"
+        },
+        "targetAttachmentVersion": {
+          "type": "integer",
+          "format": "int32",
+          "example": 3,
+          "description": "The version of the attachment"
+        }
+      },
+      "description": "The representation of the attachments affected by a document action on a page / blogpost"
+    }
+  }
+};
+
+  window.onload = function() {
+    window.ui = SwaggerUIBundle({
+      spec: spec,
+      dom_id: '#swagger-ui',
+      presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIStandalonePreset
+      ],
+      layout: "StandaloneLayout"
+    });
+  };
+</script>
+</body>
+</html>

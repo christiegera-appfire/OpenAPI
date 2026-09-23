@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Document Activity Upgrade API (latest)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  #swagger-ui { max-width: 100%; }
+  .topbar { display: none; }
+</style>
+</head>
+<body>
+<div id="swagger-ui"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+<script>
+  const spec = {
+  "swagger": "2.0",
+  "info": {
+    "version": "latest",
+    "title": "Document Activity Upgrade API (latest)"
+  },
+  "basePath": "/rest/cw/2/",
+  "tags": [
+    {
+      "name": "documentactivity"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/documentactivity/upgrade/cancel": {
+      "post": {
+        "tags": [
+          "documentactivity"
+        ],
+        "summary": "Cancels the running space upgrade/pre-check task for the space provided",
+        "description": "",
+        "operationId": "cancelSpaceUpgrade",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Space Upgrade/Pre-check task cancel request",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/RestSpaceUpgradeCancelRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Upgrade task successfully cancelled"
+          },
+          "401": {
+            "description": "The application has no permission over this method"
+          },
+          "403": {
+            "description": "The given user does not have access."
+          },
+          "404": {
+            "description": "There is no upgrade process for the given space"
+          },
+          "500": {
+            "description": "Something went wrong, unable to cancel the space upgrade task."
+          }
+        }
+      }
+    },
+    "/documentactivity/upgrade/content/run": {
+      "post": {
+        "tags": [
+          "documentactivity"
+        ],
+        "summary": "Run the content upgrade/pre-check task given a content id (Read Only Mode is not required)",
+        "description": "",
+        "operationId": "runContentUpgrade",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Page Upgrade request",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/RestContentUpgradeRunRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The content upgrade/pre-check task has been executed successfully.",
+            "schema": {
+              "$ref": "#/definitions/RestContentUpgradeRunResponse"
+            }
+          },
+          "400": {
+            "description": "The content id parameter is not provided or the space to which the page belongs to is not upgraded."
+          },
+          "401": {
+            "description": "The application has no permission over this method."
+          },
+          "403": {
+            "description": "The given user does not have access."
+          },
+          "404": {
+            "description": "The given content id does not exist."
+          },
+          "500": {
+            "description": "Something went wrong, unable to run the content upgrade/pre-check task."
+          }
+        }
+      }
+    },
+    "/documentactivity/upgrade/report": {
+      "get": {
+        "tags": [
+          "documentactivity"
+        ],
+        "summary": "Retrieves the upgrade report, giving the information about the spaces with workflows and their respective statistics.",
+        "description": "",
+        "operationId": "getUpgradesReport",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The upgrade report is generated and returned.",
+            "schema": {
+              "$ref": "#/definitions/RestUpgradeResponse"
+            }
+          },
+          "401": {
+            "description": "The application has no permission over this method"
+          },
+          "403": {
+            "description": "The given user does not have access."
+          },
+          "500": {
+            "description": "Something went wrong, unable to retrieve space upgrade report."
+          }
+        }
+      }
+    },
+    "/documentactivity/upgrade/revert": {
+      "post": {
+        "tags": [
+          "documentactivity"
+        ],
+        "summary": "Revert the space upgrade task given the space key of and upgraded space",
+        "description": "",
+        "operationId": "revertSpaceUpgrade",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Revert Space Upgrade request",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/RestSpaceRevertUpgradeRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The revert task is running for the given space.",
+            "schema": {
+              "$ref": "#/definitions/RestSpaceRevertUpgradeResponse"
+            }
+          },
+          "400": {
+            "description": "The given space key does not exist."
+          },
+          "401": {
+            "description": "The application has no permission over this method"
+          },
+          "403": {
+            "description": "The given user does not have access."
+          },
+          "500": {
+            "description": "Something went wrong, unable to run the space revert task."
+          }
+        }
+      }
+    },
+    "/documentactivity/upgrade/run": {
+      "post": {
+        "tags": [
+          "documentactivity"
+        ],
+        "summary": "Run the space upgrade/pre-check task given a list of space keys to upgrade",
+        "description": "",
+        "operationId": "runSpaceUpgrade",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Space Upgrade request",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/RestSpaceUpgradeRunRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The upgrade task is running for the list of given spaces.",
+            "schema": {
+              "$ref": "#/definitions/RestSpaceUpgradeRunResponse"
+            }
+          },
+          "400": {
+            "description": "The given space key does not exist."
+          },
+          "401": {
+            "description": "The application has no permission over this method"
+          },
+          "403": {
+            "description": "The given user does not have access."
+          },
+          "500": {
+            "description": "Something went wrong, unable to run the space upgrade task."
+          }
+        }
+      }
+    },
+    "/documentactivity/upgrade/status/{spaceKey}": {
+      "get": {
+        "tags": [
+          "documentactivity"
+        ],
+        "summary": "Retrieves the space upgrade/pre-check status of the space provided.",
+        "description": "",
+        "operationId": "getSpaceUpgradeStatus",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "spaceKey",
+            "in": "path",
+            "description": "Space key to get upgrade/pre-check data",
+            "required": true,
+            "type": "string",
+            "x-example": "spacekey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The space upgrade/pre-check status is returned.",
+            "schema": {
+              "$ref": "#/definitions/RestSpaceUpgradeTask"
+            }
+          },
+          "401": {
+            "description": "The application has no permission over this method"
+          },
+          "403": {
+            "description": "The given user does not have access."
+          },
+          "500": {
+            "description": "Something went wrong, Unable to retrieve the space pre-check status."
+          }
+        }
+      }
+    },
+    "/documentactivity/upgrade/support/{spaceKey}": {
+      "get": {
+        "tags": [
+          "documentactivity"
+        ],
+        "summary": "Get support file for the document activity upgrade",
+        "description": "",
+        "operationId": "getSupportFile",
+        "produces": [
+          "application/octet-stream"
+        ],
+        "parameters": [
+          {
+            "name": "spaceKey",
+            "in": "path",
+            "description": "Space key to get upgrade/pre-check support package file",
+            "required": true,
+            "type": "string",
+            "x-example": "spacekey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Support file is generated and returned"
+          },
+          "400": {
+            "description": "Space key is null or does not exist"
+          },
+          "401": {
+            "description": "The application has no permission over this method"
+          },
+          "403": {
+            "description": "User is not administrator"
+          },
+          "404": {
+            "description": "No support package content"
+          },
+          "500": {
+            "description": "Cannot generate support data"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "RestContentUpgradeRunRequest": {
+      "type": "object",
+      "required": [
+        "contentId",
+        "upgrade"
+      ],
+      "properties": {
+        "contentId": {
+          "type": "integer",
+          "format": "int64",
+          "example": 7667751,
+          "description": "Content(Page/BlogPost) id to perform the upgrade or pre-check process"
+        },
+        "upgrade": {
+          "type": "boolean",
+          "description": "True or false if we want to perform the upgrade or pre-check process respectively."
+        }
+      },
+      "description": "This is the specification of content upgrade/pre-check run request."
+    },
+    "RestContentUpgradeRunResponse": {
+      "type": "object",
+      "properties": {
+        "contentId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Content id to perform the upgrade or pre-check process"
+        },
+        "status": {
+          "type": "string",
+          "example": "CHECK_SUCCESS",
+          "description": "Status of the actual state, possible outcomes: CHECK_NOT_RUN, CHECK_IN_PROGRESS, CHECK_SUCCESS, CHECK_FAIL, CHECK_CANCEL, UPGRADE_IN_PROGRESS, UPGRADE_SUCCESS, UPGRADE_FAIL, UPGRADE_CANCEL"
+        },
+        "support": {
+          "type": "string",
+          "example": "/rest/cw/2/documentactivity/upgrade/support/TEST",
+          "description": "The support file link, to complete the partial link concat the root url"
+        }
+      },
+      "description": "This is the specification of content upgrade/pre-check run response."
+    },
+    "RestSpaceRevertUpgradeRequest": {
+      "type": "object",
+      "required": [
+        "spaceKey"
+      ],
+      "properties": {
+        "spaceKey": {
+          "type": "string",
+          "description": "Space key to perform the revert process"
+        }
+      },
+      "description": "This is the specification of space upgrade revert request."
+    },
+    "RestSpaceRevertUpgradeResponse": {
+      "type": "object",
+      "properties": {
+        "revertTask": {
+          "xml": {
+            "name": "spacePreCheck"
+          },
+          "description": "Space revert upgrade task started",
+          "$ref": "#/definitions/RestSpaceUpgradeTask"
+        }
+      }
+    },
+    "RestSpaceUpgrade": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "demo space name",
+          "description": "space name"
+        },
+        "key": {
+          "type": "string",
+          "example": "DEMO",
+          "description": "space key"
+        },
+        "home": {
+          "type": "string",
+          "example": "/display/DEMO/demo",
+          "description": "space home url"
+        },
+        "numPagesWithHistory": {
+          "type": "integer",
+          "format": "int64",
+          "example": 4,
+          "description": "number of pages with a workflow history in the space"
+        },
+        "totalPages": {
+          "type": "integer",
+          "format": "int64",
+          "example": 5,
+          "description": "the total number of pages in the space"
+        },
+        "needsUpgrade": {
+          "type": "boolean",
+          "description": "flag if the space needs to be upgraded or not"
+        },
+        "preCheck": {
+          "description": "the space upgrade task status",
+          "$ref": "#/definitions/RestSpaceUpgradeTask"
+        }
+      },
+      "description": "This is the specification of the space with the data about the workflows and the pages."
+    },
+    "RestSpaceUpgradeCancelRequest": {
+      "type": "object",
+      "required": [
+        "spaceKey",
+        "upgrade"
+      ],
+      "properties": {
+        "spaceKey": {
+          "type": "string",
+          "example": "DEMO",
+          "description": "space key"
+        },
+        "upgrade": {
+          "type": "boolean",
+          "description": "True or false if we want to perform the cancel of the upgrade or pre-check process respectively."
+        }
+      },
+      "description": "This is the specification of space upgrade/pre-check cancel request."
+    },
+    "RestSpaceUpgradeRunRequest": {
+      "type": "object",
+      "required": [
+        "spaceKeys",
+        "upgrade"
+      ],
+      "properties": {
+        "spaceKeys": {
+          "type": "array",
+          "description": "List of space keys to perform the upgrade or pre-check process",
+          "items": {
+            "type": "string"
+          }
+        },
+        "upgrade": {
+          "type": "boolean",
+          "description": "True or false if we want to perform the upgrade or pre-check process respectively."
+        }
+      },
+      "description": "This is the specification of space upgrade/pre-check run request."
+    },
+    "RestSpaceUpgradeRunResponse": {
+      "type": "object",
+      "properties": {
+        "upgradeTasks": {
+          "type": "array",
+          "xml": {
+            "name": "spacesPreChecks"
+          },
+          "description": "List of space upgrade tasks started",
+          "items": {
+            "xml": {
+              "name": "spacesPreChecks"
+            },
+            "$ref": "#/definitions/RestSpaceUpgradeTask"
+          }
+        }
+      },
+      "xml": {
+        "name": "RestSpaceUpgradeRunResponse"
+      },
+      "description": "This is the specification of space upgrade/pre-check run response."
+    },
+    "RestSpaceUpgradeTask": {
+      "type": "object",
+      "properties": {
+        "spaceKey": {
+          "type": "string",
+          "example": "DEMO",
+          "xml": {
+            "name": "key"
+          },
+          "description": "space key"
+        },
+        "status": {
+          "type": "string",
+          "example": "UPGRADE_IN_PROGRESS",
+          "description": "Status of the actual state, possible outcomes: CHECK_NOT_RUN, CHECK_IN_PROGRESS, CHECK_SUCCESS, CHECK_FAIL, CHECK_CANCEL, UPGRADE_IN_PROGRESS, UPGRADE_SUCCESS, UPGRADE_FAIL, UPGRADE_CANCEL"
+        },
+        "startedAt": {
+          "type": "integer",
+          "format": "int64",
+          "example": 1672752415,
+          "description": "started date of the update task, the format is the current instant with the system UTC clock."
+        },
+        "duration": {
+          "type": "string",
+          "example": "2m ",
+          "description": "The time in seconds, minutes, hours that the task has taken to be executed"
+        },
+        "progress": {
+          "type": "integer",
+          "format": "int32",
+          "example": 75,
+          "description": "The percentage of the upgrade process that has been completed"
+        },
+        "numErrors": {
+          "type": "integer",
+          "format": "int32",
+          "example": 0,
+          "description": "The number of errors found in the pages "
+        },
+        "support": {
+          "type": "string",
+          "example": "/rest/cw/2/documentactivity/upgrade/support/DEMO",
+          "description": "The support file link, to complete the partial link concat the root url"
+        },
+        "phase": {
+          "type": "string",
+          "example": "Phase 2/4 DB storage (AO Tables): page 1/5",
+          "description": "Phase the upgrade process is currently in"
+        }
+      },
+      "xml": {
+        "name": "RestSpaceUpgradeTask"
+      },
+      "description": "It is the current state of the upgrade in a space in which the upgrade task has been executed."
+    },
+    "RestUpgradeMetadata": {
+      "type": "object",
+      "properties": {
+        "totalPagesWithHistory": {
+          "type": "integer",
+          "format": "int64",
+          "example": 3,
+          "description": "the total number of pages with workflows history"
+        },
+        "totalSpacesWithHistory": {
+          "type": "integer",
+          "format": "int64",
+          "example": 2,
+          "description": "the total number of spaces with workflow history"
+        },
+        "totalSpaces": {
+          "type": "integer",
+          "format": "int64",
+          "example": 2,
+          "description": "total spaces"
+        },
+        "medianPagesWithWorkflowPerSpace": {
+          "type": "number",
+          "format": "double",
+          "example": 1.5,
+          "description": "the median number of pages with workflow per space"
+        },
+        "highestNumPagesWithWorkflowPerSpace": {
+          "type": "integer",
+          "format": "int64",
+          "example": 2,
+          "description": "the largest amount of pages with workflow per space"
+        },
+        "totalSpacesChecked": {
+          "type": "integer",
+          "format": "int64",
+          "example": 2,
+          "description": "total spaces checked for the upgrade"
+        },
+        "totalSpacesUpgraded": {
+          "type": "integer",
+          "format": "int64",
+          "example": 2,
+          "description": "total spaces upgraded for the upgrade"
+        },
+        "latestSpaceUpgraded": {
+          "type": "integer",
+          "format": "int64",
+          "example": 2,
+          "description": "latest timestamp of a space upgraded"
+        },
+        "totalDocActivityEntries": {
+          "type": "integer",
+          "format": "int64",
+          "example": 3,
+          "description": "total document activity entries"
+        },
+        "totalSpacesNeedUpgrade": {
+          "type": "integer",
+          "format": "int64",
+          "example": 3,
+          "description": "total spaces that need upgrade"
+        },
+        "start": {
+          "type": "integer",
+          "format": "int32",
+          "example": 0,
+          "description": "start at index, by default: 0"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32",
+          "example": 100,
+          "description": "limit the number of spaces retrieved, by default: 100"
+        },
+        "hasMore": {
+          "type": "boolean",
+          "example": true,
+          "description": "quickly determine if there are more spaces to show for the pagination"
+        }
+      },
+      "description": "These are the workflow related statistics of the spaces that have or have had workflows."
+    },
+    "RestUpgradeResponse": {
+      "type": "object",
+      "properties": {
+        "restSpaceUpgradeList": {
+          "type": "array",
+          "xml": {
+            "name": "spacesPreChecks"
+          },
+          "description": "list of space upgrades statuses",
+          "items": {
+            "xml": {
+              "name": "spacesPreChecks"
+            },
+            "$ref": "#/definitions/RestSpaceUpgrade"
+          }
+        },
+        "restUpgradeMetadata": {
+          "xml": {
+            "name": "metadata"
+          },
+          "description": "upgrade metadata",
+          "$ref": "#/definitions/RestUpgradeMetadata"
+        },
+        "readOnlyMode": {
+          "type": "boolean"
+        }
+      },
+      "xml": {
+        "name": "RestUpgradeResponse"
+      },
+      "description": "This is the specification of all the space upgrades statuses with some workflow metadata of the Confluence instance."
+    }
+  }
+};
+
+  window.onload = function() {
+    window.ui = SwaggerUIBundle({
+      spec: spec,
+      dom_id: '#swagger-ui',
+      presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIStandalonePreset
+      ],
+      layout: "StandaloneLayout"
+    });
+  };
+</script>
+</body>
+</html>

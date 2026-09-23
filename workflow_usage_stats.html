@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Workflow Usage Statistics REST API</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  #swagger-ui { max-width: 100%; }
+  .topbar { display: none; }
+</style>
+</head>
+<body>
+<div id="swagger-ui"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+<script>
+  const spec = {
+  "swagger": "2.0",
+  "info": {
+    "version": "latest",
+    "title": "Workflow Usage Statistics REST API"
+  },
+  "basePath": "/rest/cw/2/",
+  "tags": [
+    { "name": "documentactivity" }
+  ],
+  "schemes": [ "https" ],
+  "paths": {
+    "/documentactivity/usage/approval": {
+      "post": {
+        "tags": [ "documentactivity" ],
+        "summary": "Retrieves the time elapsed for a specific approval related to the specified operation: maximum (max), minimum (min) and average (avg).",
+        "description": "",
+        "operationId": "getTimeForSpecificApproval",
+        "parameters": [ {
+          "in": "body",
+          "name": "body",
+          "description": "Request for the time spent for specific approval",
+          "required": true,
+          "schema": {
+            "$ref": "#/definitions/ApprovalUsageStatsRequest"
+          }
+        } ],
+        "responses": {
+          "200": { "description": "The time estimation was retrieved successfully." },
+          "400": { "description": "Validation error of the input body" },
+          "401": { "description": "Client is not authenticated" },
+          "403": { "description": "The given user does not have access." },
+          "500": { "description": "Exception when trying to retrieve usage estimation." }
+        }
+      }
+    },
+    "/documentactivity/usage/assignee": {
+      "post": {
+        "tags": [ "documentactivity" ],
+        "summary": "Retrieves the maximum/minimum/average time spent by an assignee to approve an approval.",
+        "description": "",
+        "operationId": "getUsageTimeByAssignee",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [ {
+          "in": "body",
+          "name": "Time spent by an assignee to approve an approval request",
+          "required": false,
+          "schema": {
+            "$ref": "#/definitions/AssigneeUsageStatsRequest"
+          }
+        } ],
+        "responses": {
+          "200": {
+            "description": "A time estimation was retrieved successfully",
+            "schema": { "type": "number", "format": "double" }
+          },
+          "400": { "description": "Validation error of the input body" },
+          "401": { "description": "Client is not authenticated" },
+          "403": { "description": "User has not workflow visibility permissions" },
+          "500": { "description": "Exception when trying to retrieve usage estimation" }
+        }
+      }
+    },
+    "/documentactivity/usage/state": {
+      "post": {
+        "tags": [ "documentactivity" ],
+        "summary": "Retrieves the maximum/minimum/average time spent in a certain state.",
+        "description": "",
+        "operationId": "getUsageTimeInState",
+        "consumes": [ "application/json" ],
+        "produces": [ "application/json" ],
+        "parameters": [ {
+          "in": "body",
+          "name": "Document activity time spent in a certain state request",
+          "required": false,
+          "schema": {
+            "$ref": "#/definitions/StateUsageStatsRequest"
+          }
+        } ],
+        "responses": {
+          "200": {
+            "description": "A time estimation was retrieved successfully",
+            "schema": { "type": "number", "format": "double" }
+          },
+          "400": { "description": "Validation error of the input body" },
+          "401": { "description": "Client is not authenticated" },
+          "403": { "description": "User has not workflow visibility permissions" },
+          "500": { "description": "Exception when trying to retrieve usage estimation" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ApprovalUsageStatsRequest": {
+      "type": "object",
+      "required": [ "approvalName", "usageTimeEstimation" ],
+      "properties": {
+        "spaceKeys": {
+          "type": "array",
+          "example": "['ASD','PEW']",
+          "description": "List of space keys which stats want to be retrieved from",
+          "items": { "type": "string" }
+        },
+        "fromDate": {
+          "type": "integer",
+          "format": "int64",
+          "example": 12345323,
+          "description": "Starting date to filter the time estimation expressed in epoch millis"
+        },
+        "toDate": {
+          "type": "integer",
+          "format": "int64",
+          "example": 12345326,
+          "description": "Limit date for the time estimation expressed in epoch millis"
+        },
+        "usageTimeEstimation": {
+          "type": "string",
+          "example": "min",
+          "description": "Time estimation mode for the request. Valid values are : max, min, avg. For the Maximum, Minimum or Average values"
+        },
+        "approvalName": {
+          "type": "string",
+          "example": "approval",
+          "description": "The name of the approval to get the statistics from"
+        },
+        "stateName": {
+          "type": "string",
+          "example": "state1",
+          "description": "The name of the state"
+        }
+      },
+      "description": "This is the specification of the specific approval statistics request"
+    },
+    "AssigneeUsageStatsRequest": {
+      "type": "object",
+      "required": [ "assignee", "usageTimeEstimation" ],
+      "properties": {
+        "spaceKeys": {
+          "type": "array",
+          "example": "['ASD','PEW']",
+          "description": "List of space keys which stats want to be retrieved from",
+          "items": { "type": "string" }
+        },
+        "fromDate": {
+          "type": "integer",
+          "format": "int64",
+          "example": 12345323,
+          "description": "Starting date to filter the time estimation expressed in epoch millis"
+        },
+        "toDate": {
+          "type": "integer",
+          "format": "int64",
+          "example": 12345326,
+          "description": "Limit date for the time estimation expressed in epoch millis"
+        },
+        "usageTimeEstimation": {
+          "type": "string",
+          "example": "min",
+          "description": "Time estimation mode for the request. Valid values are : max, min, avg. For the Maximum, Minimum or Average values"
+        },
+        "assignee": {
+          "type": "string",
+          "example": "admin",
+          "description": "The name of the assignee"
+        },
+        "stateName": {
+          "type": "string",
+          "example": "state1",
+          "description": "The name of the state"
+        },
+        "approvalName": {
+          "type": "string",
+          "example": "approval",
+          "description": "The name of the approval"
+        }
+      },
+      "description": "This is the specification for the statistics request"
+    },
+    "StateUsageStatsRequest": {
+      "type": "object",
+      "required": [ "stateName", "usageTimeEstimation" ],
+      "properties": {
+        "spaceKeys": {
+          "type": "array",
+          "example": "['ASD','PEW']",
+          "description": "List of space keys which stats want to be retrieved from",
+          "items": { "type": "string" }
+        },
+        "fromDate": {
+          "type": "integer",
+          "format": "int64",
+          "example": 12345323,
+          "description": "Starting date to filter the time estimation expressed in epoch millis"
+        },
+        "toDate": {
+          "type": "integer",
+          "format": "int64",
+          "example": 12345326,
+          "description": "Limit date for the time estimation expressed in epoch millis"
+        },
+        "usageTimeEstimation": {
+          "type": "string",
+          "example": "min",
+          "description": "Time estimation mode for the request. Valid values are : max, min, avg. For the Maximum, Minimum or Average values"
+        },
+        "stateName": {
+          "type": "string",
+          "example": "state1",
+          "description": "The name of the state"
+        }
+      },
+      "description": "This is the specification for the statistics request"
+    }
+  }
+};
+
+  window.onload = function() {
+    window.ui = SwaggerUIBundle({
+      spec: spec,
+      dom_id: '#swagger-ui',
+      presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIStandalonePreset
+      ],
+      layout: "StandaloneLayout"
+    });
+  };
+</script>
+</body>
+</html>

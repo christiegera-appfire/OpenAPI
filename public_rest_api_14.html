@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Public REST API for Configuration Manager for Jira (CMJ) 1.4</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  #swagger-ui { max-width: 100%; }
+  .topbar { display: none; }
+</style>
+</head>
+<body>
+<div id="swagger-ui"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+<script>
+  const spec = {
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Public REST API for Configuration Manager for Jira (CMJ)",
+    "version": "1.4"
+  },
+  "servers": [
+    {
+      "url": "http://yourjira.com/jira/rest/configuration-manager/api/1.4"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Deployments",
+      "description": "Manage deployments. Deployment is a two step process - first meta information is provided and then a snapshot file is uploaded. The operation is asynchronous - a separate REST endpoint is used for tracking deployment progress."
+    },
+    {
+      "name": "Snapshots",
+      "description": "Manage snapshots."
+    }
+  ],
+  "paths": {
+    "/deployments": {
+      "post": {
+        "tags": [
+          "Deployments"
+        ],
+        "summary": "Create a deployment operation",
+        "description": "Starts a deployment operation. Scope can be either 'system' or 'project'. Mode can be either 'systemMerge'/'systemRestore' for system snapshots, or 'singleProject'/'multiProject' for project snapshots depending on the number of projects inside the snapshot. The parameter attachmentFilesPath is the path where the attachment files reside on this system. Choosing 'skipReindexing' makes the deployment operation faster by skipping reindexing. In this case reindexing should be done later by the user. 'skipObjectDescriptions' and 'skipAvatars' ignore changes to descriptions/avatars.",
+        "operationId": "createDeploymentOperation",
+        "requestBody": {
+          "description": "The deployment operation scope parameters.",
+          "content": {
+            "application/json": {
+              "examples": {
+                "System merge mode": {
+                  "description": "System merge mode",
+                  "value": {
+                    "scope": "system",
+                    "mode": "systemMerge",
+                    "options": {
+                      "mergeVersionsAndComponents": true,
+                      "mergeProjectRoles": true,
+                      "systemDoNotDeployGlobalPermissions": true,
+                      "skipAvatars": true,
+                      "skipObjectDescriptions": true,
+                      "skipReindexing": true
+                    }
+                  }
+                },
+                "System restore mode": {
+                  "description": "System restore mode",
+                  "value": {
+                    "scope": "system",
+                    "mode": "systemRestore"
+                  }
+                },
+                "Single project mode": {
+                  "description": "Single project mode",
+                  "value": {
+                    "scope": "project",
+                    "mode": "singleProject",
+                    "projectKey": "TEST",
+                    "options": {
+                      "createNewProject": true,
+                      "newProjectKey": "PRJ",
+                      "newProjectName": "My Project",
+                      "mergeVersionsAndComponents": false,
+                      "mergeProjectRoles": true,
+                      "attachmentFilesPath": "C:\\attachments"
+                    }
+                  }
+                },
+                "Multiple projects mode": {
+                  "description": "Multiple projects mode",
+                  "value": {
+                    "scope": "project",
+                    "mode": "multiProject",
+                    "options": {
+                      "mergeVersionsAndComponents": true,
+                      "mergeProjectRoles": true,
+                      "attachmentFilesPath": "C:\\attachments"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Deployment operation created. Returns the id of the operation.",
+            "headers": {
+              "Location": {
+                "description": "The URI for checking the progress of the deployment operation.",
+                "required": true,
+                "style": "simple"
+              }
+            },
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Example Response": {
+                    "description": "Example Response",
+                    "value": {
+                      "id": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request is invalid."
+          },
+          "403": {
+            "description": "User does not have permissions to deploy a snapshot."
+          }
+        }
+      }
+    },
+    "/deployments/{id}": {
+      "get": {
+        "tags": [
+          "Deployments"
+        ],
+        "summary": "Retrieve the status of the deployment operation",
+        "operationId": "getDeploymentOperation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The deployment operation id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status successfully returned. Can be \"waiting\", \"running\", \"failed\", \"succeeded\".",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Running operation": {
+                    "description": "Running operation",
+                    "value": {
+                      "id": 1,
+                      "status": "running"
+                    }
+                  },
+                  "Failed operation": {
+                    "description": "Failed operation",
+                    "value": {
+                      "id": 1,
+                      "status": "failed",
+                      "reason": "Some explanation of the failure"
+                    }
+                  },
+                  "Succeeded operation": {
+                    "description": "Succeeded operation",
+                    "value": {
+                      "id": 1,
+                      "status": "succeeded"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request is invalid."
+          },
+          "403": {
+            "description": "User does not have permissions to check deployment status."
+          },
+          "404": {
+            "description": "No deployment operation with the given id."
+          }
+        }
+      }
+    },
+    "/deployments/{id}/content": {
+      "put": {
+        "tags": [
+          "Deployments"
+        ],
+        "summary": "Manage the snapshot content for the deployment with the given id.",
+        "description": "Uploads the snapshot content. The snapshot content must be provided in a part named 'file' within a multipart/form-data body. After the content is successfully uploaded, the deployment process will start.",
+        "operationId": "uploadSnapshot",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The deployment operation id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "description": "The snapshot file to upload",
+                "format": "binary"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Snapshot successfully uploaded and parsed."
+          },
+          "400": {
+            "description": "Request is invalid - in case the type of the snapshot does not match the type of deployment operation."
+          },
+          "403": {
+            "description": "User does not have permissions to deploy a snapshot."
+          }
+        }
+      }
+    },
+    "/snapshots": {
+      "get": {
+        "tags": [
+          "Snapshots"
+        ],
+        "summary": "Returns the metadata for all snapshots on the system.",
+        "operationId": "getSnapshotsMetadata",
+        "responses": {
+          "200": {
+            "description": "Metadata successfully fetched.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Snapshots metadata response": {
+                    "description": "Snapshots metadata response",
+                    "value": {
+                      "snapshotsMetadata": [
+                        {
+                          "id": 2,
+                          "name": "data.zip",
+                          "creationDate": 1740665507207,
+                          "type": "System",
+                          "jiraVersion": "10.4.1",
+                          "serverId": "AG87-S37R-QM8W-6VWE",
+                          "licenseSEN": "SEN-500",
+                          "objectCount": 102,
+                          "issueCount": 0,
+                          "hasAttachmentsMetadata": false,
+                          "hasAttachmentFiles": false,
+                          "checkCustomFieldValues": false,
+                          "includeProjectFilters": false,
+                          "includeProjectBoards": false,
+                          "includeAllFilters": true,
+                          "includeAllBoards": true,
+                          "includeAllDashboards": true,
+                          "includeGlobalAppData": true,
+                          "isWithIssues": false,
+                          "isRecreatable": true,
+                          "snapshotStatus": "SUCCESSFUL",
+                          "hasAutomationRules": true,
+                          "includeAutomationRules": false,
+                          "includeAllAutomationRules": true,
+                          "includeProjectAutomationRules": false,
+                          "includeGlobalAutomationRules": false
+                        },
+                        {
+                          "id": 1,
+                          "name": "Snapshot Metadata",
+                          "creationDate": 1740665506800,
+                          "type": "Project",
+                          "jiraVersion": "10.4.1",
+                          "serverId": "AG87-S37R-QM8W-6VWE",
+                          "licenseSEN": "SEN-500",
+                          "objectCount": 66,
+                          "issueCount": 1,
+                          "hasAttachmentsMetadata": false,
+                          "hasAttachmentFiles": false,
+                          "checkCustomFieldValues": false,
+                          "includeProjectFilters": false,
+                          "includeProjectBoards": false,
+                          "includeAllFilters": false,
+                          "includeAllBoards": false,
+                          "includeAllDashboards": false,
+                          "includeGlobalAppData": false,
+                          "isWithIssues": true,
+                          "isRecreatable": true,
+                          "snapshotStatus": "SUCCESSFUL",
+                          "hasAutomationRules": true,
+                          "includeAutomationRules": false,
+                          "includeAllAutomationRules": false,
+                          "includeProjectAutomationRules": true,
+                          "includeGlobalAutomationRules": true,
+                          "filter": "issuetype in ('Bug')",
+                          "snapshotProjects": [
+                            "HSP",
+                            "MKY"
+                          ],
+                          "snapshotAppData": [
+                            {
+                              "appId": "com.botronsoft.jira.rollout.spi-test-plugin",
+                              "includeGlobalConfiguration": false,
+                              "appDataObjectIds": [
+                                {
+                                  "typeId": "type1",
+                                  "objectId": "id1"
+                                },
+                                {
+                                  "typeId": "type1",
+                                  "objectId": "id2"
+                                },
+                                {
+                                  "typeId": "type1",
+                                  "objectId": "id3"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request is invalid."
+          },
+          "403": {
+            "description": "User does not have permissions to retrieve snapshots metadata."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Snapshots"
+        ],
+        "summary": "Create snapshot",
+        "description": "Creates a new snapshot. The scope of the snapshot can be either 'system', 'project' or 'projectWithIssues'. The 'options' array is not required. The 'includeAttachmentFiles' flag will include issue attachment files for the selected projects. If unselected, during snapshot deployment there's an option to provide the path where the attachment files reside on the target system. All filters/boards/dashboards/global app data can be included. Individual items can be included explicitly using the 'filters', 'agileBoards', 'dashboards' and 'appsWithGlobalData' parameters. Filters and boards related to the exported projects can be included with the includeProjectFilters/includeProjectBoards options (not available for system snapshot). Exported issues can be filtered using the 'filter' parameter. Please refer to the examples for details!",
+        "operationId": "createSnapshot",
+        "requestBody": {
+          "description": "The snapshot operation scope parameters.",
+          "content": {
+            "application/json": {
+              "examples": {
+                "Project Snapshot": {
+                  "description": "Project Snapshot",
+                  "value": {
+                    "name": "Project Snapshot",
+                    "description": "A snapshot of all project PRJ configuration",
+                    "scope": "project",
+                    "projectKey": "PRJ"
+                  }
+                },
+                "Multi-project Snapshot": {
+                  "description": "Multi-project Snapshot",
+                  "value": {
+                    "name": "Multi-project Snapshot",
+                    "description": "Multi-project snapshot with explicitly included filters, boards and dashboards, and custom fields referenced in custom field values for issues in these projects",
+                    "scope": "project",
+                    "projectKey": [
+                      "PRJA",
+                      "PRJB"
+                    ],
+                    "filters": [
+                      {
+                        "filterId": 10001
+                      }
+                    ],
+                    "agileBoards": [
+                      {
+                        "boardId": 10001
+                      }
+                    ],
+                    "dashboards": [
+                      {
+                        "dashboardId": 10001
+                      }
+                    ],
+                    "options": {
+                      "checkCustomFieldValues": true
+                    }
+                  }
+                },
+                "Project Snapshot with Issues": {
+                  "description": "Project Snapshot with Issues",
+                  "value": {
+                    "name": "Project Snapshot with Issues",
+                    "description": "Project snapshot with issues - attachment files included",
+                    "scope": "projectWithIssues",
+                    "projectKey": [
+                      "PRJA",
+                      "PRJB"
+                    ],
+                    "options": {
+                      "includeAttachmentFiles": true
+                    }
+                  }
+                },
+                "System Snapshot": {
+                  "description": "System Snapshot",
+                  "value": {
+                    "name": "System Snapshot",
+                    "description": "System snapshot including all filters, boards, dashboards and supported 3rd party app data on the system. The option to include all filters etc. is also available for (multi)project snapshots as well.",
+                    "scope": "system",
+                    "includeAllFilters": true,
+                    "includeAllBoards": true,
+                    "includeAllDashboards": true,
+                    "includeGlobalAppData": true
+                  }
+                },
+                "Project Snapshot with related filters and boards": {
+                  "description": "Project Snapshot with related filters and boards",
+                  "value": {
+                    "name": "Project Snapshot with related filters and boards",
+                    "description": "Project snapshot including all project filters and boards (which reference the project in their JQL query)",
+                    "scope": "project",
+                    "includeProjectFilters": true,
+                    "includeProjectBoards": true
+                  }
+                },
+                "Project Snapshot including an app's global data": {
+                  "description": "Project Snapshot including an app's global data",
+                  "value": {
+                    "name": "Project Snapshot including an app's global data",
+                    "description": "Project snapshot including global app data of a single app",
+                    "scope": "project",
+                    "appsWithGlobalData": [
+                      {
+                        "key": "com.botronsoft.jira.rollout.spi-test-plugin"
+                      }
+                    ]
+                  }
+                },
+                "Project Snapshot with filtered issues": {
+                  "description": "Project Snapshot with filtered issues",
+                  "value": {
+                    "name": "Project Snapshot with filtered issues",
+                    "description": "Project snapshot with issues using an additional filter: this snapshot includes Bugs only",
+                    "scope": "projectWithIssues",
+                    "projectKey": [
+                      "PRJA",
+                      "PRJB"
+                    ],
+                    "filter": "issueType = Bug"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Response containing metadata about the snapshot.",
+            "headers": {
+              "Location": {
+                "description": "The URI pointing to the newly created snapshot.",
+                "required": true,
+                "style": "simple"
+              }
+            },
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Example Response": {
+                    "description": "Example Response",
+                    "value": {
+                      "id": 1,
+                      "objectCount": 86
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request is invalid. Some of the required parameters are not provided."
+          },
+          "403": {
+            "description": "User does not have permissions to create a snapshot."
+          }
+        }
+      }
+    },
+    "/snapshots/{id}": {
+      "get": {
+        "tags": [
+          "Snapshots"
+        ],
+        "summary": "Retrieve snapshot",
+        "description": "Returns the specified snapshot as a ZIP file containing a snapshot XML and additional data.",
+        "operationId": "getSnapshot",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the snapshot.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Snapshot successfully retrieved.",
+            "content": {
+              "application/octet-stream": {
+                "examples": {
+                  "Example response": {
+                    "description": "Example response",
+                    "value": "A .zip file containing the snapshot XML in the following form along with additional data:\n\n<?xml version=\"1.1\" encoding=\"UTF-8\"?>\n<jiraconfiguration:JiraConfigurationRoot xmi:version=\"2.0\" type=\"System\" name=\"My snapshot\">\n...\n</jiraconfiguration:JiraConfigurationRoot>"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request is invalid."
+          },
+          "403": {
+            "description": "User does not have permissions to retrieve a snapshot."
+          },
+          "404": {
+            "description": "No snapshot with the given id."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Snapshots"
+        ],
+        "summary": "Delete snapshot",
+        "operationId": "deleteSnapshot",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the snapshot.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Snapshot successfully deleted."
+          },
+          "400": {
+            "description": "Request is invalid."
+          },
+          "403": {
+            "description": "User does not have permissions to delete a snapshot."
+          },
+          "404": {
+            "description": "No snapshot with the given id."
+          }
+        }
+      }
+    }
+  }
+};
+
+  window.onload = function() {
+    window.ui = SwaggerUIBundle({
+      spec: spec,
+      dom_id: '#swagger-ui',
+      presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIStandalonePreset
+      ],
+      layout: "StandaloneLayout"
+    });
+  };
+</script>
+</body>
+</html>

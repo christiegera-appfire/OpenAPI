@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Public REST API for Integrity Check for Jira 1.4</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  #swagger-ui { max-width: 100%; }
+  .topbar { display: none; }
+</style>
+</head>
+<body>
+<div id="swagger-ui"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+<script>
+  const spec = {
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Public REST API for Integrity Check for Jira",
+    "version": "1.4"
+  },
+  "servers": [
+    {
+      "url": "http://yourjira.com/jira/rest/integrity-check/api/1.4"
+    }
+  ],
+  "paths": {
+    "/integrity/{id}/cancel": {
+      "put": {
+        "tags": [
+          "Integrity Check"
+        ],
+        "summary": "Cancels Integrity Check operation.",
+        "description": "Cancel a running Integrity Check operation.",
+        "operationId": "cancelCheck",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the running operation.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cancellation request received."
+          },
+          "400": {
+            "description": "An error occurred while canceling the Integrity Check operation."
+          },
+          "404": {
+            "description": "Integrity Check operation with the given id does not exist."
+          }
+        }
+      }
+    },
+    "/integrity/{id}": {
+      "get": {
+        "tags": [
+          "Integrity Check"
+        ],
+        "summary": "Gets Integrity Check operation status or result.",
+        "description": "Gets the progress or end result of the Integrity check operation with the given id.",
+        "operationId": "getIntegrityCheckOperation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the operation.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status successfully returned.",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Integrity Check Completed Response Example": {
+                    "description": "Integrity Check Completed Response Example",
+                    "value": {
+                      "id": 14,
+                      "integrityModel": {
+                        "maxSeverity": "Warning",
+                        "containsUnknownErrors": false,
+                        "objectCount": 227,
+                        "hasValidLicense": false,
+                        "quickfixablePathsCount": 0
+                      },
+                      "message": "Integrity check succeeded",
+                      "progressDouble": 1,
+                      "status": "Succeeded"
+                    }
+                  },
+                  "Integrity Check In Progress Response Example": {
+                    "description": "Integrity Check In Progress Response Example",
+                    "value": {
+                      "id": 8,
+                      "message": "Integrity Check in progress. Checking Filters: 56 of 492.",
+                      "progressMessages": "[...]",
+                      "progressDouble": 0.4227642276422765,
+                      "status": "Running"
+                    }
+                  },
+                  "Integrity Check Completed with Warnings Response Example": {
+                    "description": "Integrity Check Completed with Warnings Response Example",
+                    "value": {
+                      "id": 1,
+                      "integrityModel": {
+                        "violations": [
+                          {
+                            "id": "_YOyC8BU4EfCCWKjrIOSSDw",
+                            "type": "Missing object",
+                            "message": "Filter <a href=\"http://localhost:2990/jira/issues/?filter=10002\" target=\"_blank\">'Filter for RB board (557058:d86d8fd7-cba7-4eef-b7c5-80252888c7ec)'</a> refers to the missing project <b>RB</b>.",
+                            "detailedMessage": "Filter <a href=\"http://localhost:2990/jira/issues/?filter=10002\" target=\"_blank\">'Filter for RB board (557058:d86d8fd7-cba7-4eef-b7c5-80252888c7ec)'</a> refers to the missing project <b>RB</b>.",
+                            "solution": "Modify filter <a href=\"http://localhost:2990/jira/issues/?filter=10002\" target=\"_blank\">'Filter for RB board (557058:d86d8fd7-cba7-4eef-b7c5-80252888c7ec)'</a> to point to an existing project or remove the reference to the missing project. This error may be caused by an inconsistency in the Jira database and may not be evident in the Jira UI.",
+                            "severity": "Warning",
+                            "paths": [
+                              {
+                                "elements": [
+                                  {
+                                    "name": "Filter for RB board (557058:d86d8fd7-cba7-4eef-b7c5-80252888c7ec)",
+                                    "type": "Filter",
+                                    "url": "http://localhost:2990/jira/issues/?filter=10002",
+                                    "id": "10002"
+                                  },
+                                  {
+                                    "name": "project = RB ORDER BY Rank ASC",
+                                    "type": "Query",
+                                    "id": null,
+                                    "quickfixActions": [
+                                      {
+                                        "id": "e778105c-2195-40f0-96c5-9600cca1709f",
+                                        "actionId": "UPDATE_BROKEN_JQL",
+                                        "type": "Update broken JQL",
+                                        "confirmationTitle": "Update invalid JQL",
+                                        "confirmationMessage": "Confirm that you want to update the invalid JQL to: <b>createdDate is EMPTY and text ~ 'Original query: project = RB ORDER BY Rank ASC'</b>",
+                                        "confirmationMessageInBulkFix": "<li>Update the invalid JQL to: <b>createdDate is EMPTY and text ~ 'Original query: project = RB ORDER BY Rank ASC'</b></li>",
+                                        "successMessage": "JQL successfully updated.",
+                                        "errorMessage": "Failed to update JQL: <b>project = RB ORDER BY Rank ASC<b>.",
+                                        "errorMessageInBulkFix": "<li>Failed to update JQL: <b>project = RB ORDER BY Rank ASC<b></li>",
+                                        "dependencies": "{\"com.botronsoft.jira.model.server.jiraconfiguration.filter.JiraFilter\":\"10002\"}",
+                                        "objectName": "project = RB ORDER BY Rank ASC",
+                                        "priority": "1"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "name": "RB",
+                                    "type": "project",
+                                    "id": null
+                                  }
+                                ]
+                              }
+                            ],
+                            "hasQuickFix": true
+                          }
+                        ],
+                        "maxSeverity": "Warning",
+                        "containsUnknownErrors": false,
+                        "objectCount": 292,
+                        "hasValidLicense": false,
+                        "quickfixablePathsCount": 1
+                      },
+                      "message": "Integrity check succeeded",
+                      "progressDouble": 1,
+                      "status": "Succeeded"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request is invalid."
+          },
+          "404": {
+            "description": "No Integrity check operation with the given id."
+          }
+        }
+      }
+    },
+    "/integrity/{id}/csv": {
+      "get": {
+        "tags": [
+          "Integrity Check"
+        ],
+        "summary": "Gets Integrity Check operation status or result as csv.",
+        "description": "Gets a csv file with the end result of the Integrity check operation with the given id.",
+        "operationId": "getIntegrityCheckResultCSV",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the operation.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status or result successfully returned.",
+            "content": {
+              "text/csv": {}
+            }
+          },
+          "400": {
+            "description": "Request is invalid."
+          },
+          "404": {
+            "description": "No Integrity check operation with the given id."
+          }
+        }
+      }
+    },
+    "/integrity": {
+      "post": {
+        "tags": [
+          "Integrity Check"
+        ],
+        "summary": "Starts an Integrity Check operation.",
+        "description": "Start an Integrity Check operation. The scope of the operation can be either 'system', 'project' or 'snapshot scope'.Include all filters/boards/dashboards by setting the corresponding parameters to 'true'. Please refer to the examples for details!",
+        "operationId": "performCheck",
+        "requestBody": {
+          "description": "The deployment operation scope parameters.",
+          "content": {
+            "application/json": {
+              "examples": {
+                "System scope integrity check": {
+                  "description": "System scope integrity check",
+                  "value": {
+                    "scope": "system"
+                  }
+                },
+                "System scope integrity check with all options": {
+                  "description": "System scope integrity check with all options",
+                  "value": {
+                    "scope": "system",
+                    "includeAllFilters": true,
+                    "includeAllBoards": true,
+                    "includeAllDashboards": true
+                  }
+                },
+                "Project scope integrity check with options": {
+                  "description": "Project scope integrity check with options",
+                  "value": {
+                    "scope": "project",
+                    "projectKey": "PRJA",
+                    "includeProjectBoards": false,
+                    "includeProjectFilters": true
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Integrity check operation started. Returns the id of the operation.",
+            "headers": {
+              "Location": {
+                "description": "The URI pointing to the started Integrity Check operation. The operation id can be used for getting operation progress, downloading result as csv, or canceling the operation.",
+                "required": true,
+                "style": "simple"
+              }
+            },
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Example Response": {
+                    "description": "Example Response",
+                    "value": {
+                      "id": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The value 'prettywrongscope' is not a valid enumerator of 'SnapshotType'."
+          }
+        }
+      }
+    },
+    "/integrity/scoped": {
+      "post": {
+        "tags": [
+          "Integrity Check"
+        ],
+        "summary": "Snapshot scoped Integrity Check operation.",
+        "description": "Start an Integrity Check operation on the last unsuccessful snapshot.After successfully completing the operation, use \"/integrity/{id}\" to get the result.",
+        "operationId": "performScopedCheck",
+        "responses": {
+          "201": {
+            "description": "Integrity Check operation successfully started.",
+            "headers": {
+              "Location": {
+                "description": "Contains the operation Id.",
+                "required": true,
+                "style": "simple"
+              }
+            }
+          },
+          "500": {
+            "description": "Could not retrieve snapshot metadata, i.e. unsuccessful snapshot resource is missing."
+          }
+        }
+      }
+    }
+  }
+};
+
+  window.onload = function() {
+    window.ui = SwaggerUIBundle({
+      spec: spec,
+      dom_id: '#swagger-ui',
+      presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIStandalonePreset
+      ],
+      layout: "StandaloneLayout"
+    });
+  };
+</script>
+</body>
+</html>
